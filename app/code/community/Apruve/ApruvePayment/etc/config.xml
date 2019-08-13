@@ -2,7 +2,7 @@
 <config>
     <modules>
        <Apruve_ApruvePayment>
-          <version>1.0.10</version>
+          <version>1.0.11</version>
        </Apruve_ApruvePayment>
     </modules>
     <frontend>
@@ -65,6 +65,7 @@
         <payment>
             <apruvepayment>
                 <mode>1</mode>
+                <autosubmit>1</autosubmit>
                 <active>1</active>
                 <model>apruvepayment/paymentMethod</model>
                 <order_status>pending_payment</order_status>
