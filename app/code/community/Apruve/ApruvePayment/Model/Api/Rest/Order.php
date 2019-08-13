@@ -158,7 +158,7 @@ class Apruve_ApruvePayment_Model_Api_Rest_Order extends Apruve_ApruvePayment_Mod
             $curlOptions = [];
             $curlOptions[CURLOPT_POSTFIELDS] = $data;
 
-            if (@$apruveOrderId === null) {
+            if ($apruveOrderId === null) {
                 $curlAction = 'POST';
             } else {
                 $curlAction = 'PUT';
@@ -211,6 +211,16 @@ class Apruve_ApruvePayment_Model_Api_Rest_Order extends Apruve_ApruvePayment_Mod
     }
 
     /**
+     * Get url for order invoices
+     * @param string $apruveOrderId
+     * @return string
+     */
+    protected function _getOrderInvoicesUrl($apruveOrderId)
+    {
+        return $this->getBaseUrl(true) . $this->getApiUrl() . 'orders/' . $apruveOrderId . '/invoices';
+    }
+
+    /**
      * Get order from quote
      *
      * @param $quote Mage_Sales_Model_Quote
@@ -226,6 +236,27 @@ class Apruve_ApruvePayment_Model_Api_Rest_Order extends Apruve_ApruvePayment_Mod
         }
         return $order;
     }
+
+    /**
+     * Get invoices from order
+     *
+     * @param $apruveOrderId string
+     * @return $invoices
+     * @throws Mage_Core_Exception
+     */
+    public function getInvoices($apruveOrderId)
+    {
+        $result = $this->execCurlRequest($this->_getOrderInvoicesUrl($apruveOrderId));
+        if ($result['success'] == true) {
+            Mage::helper('apruvepayment')->logException('getInvoices...');
+            return $result['response'];
+        } else {
+            Mage::throwException(Mage::helper('apruvepayment')->__('Couldn\'t get invoices from order.'));
+        }
+
+        return $result;
+    }
+
 
     /**
      * Finalize an existing order by its ID in apruve
