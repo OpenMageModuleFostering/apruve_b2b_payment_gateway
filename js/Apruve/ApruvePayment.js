@@ -1,16 +1,16 @@
 var ApruvePayment = Class.create();
 
 ApruvePayment.prototype = {
-    initialize: function (hash, pr, updatedShippingUrl) {
+    initialize: function (hash, pr, shopperName, shopperEmail) {
         if (!apruve) {
             return false;
         }
 
-        this._checkShipping(pr, updatedShippingUrl);
-
         apruve.logoSrc = '';
         apruve.secureHash = hash;
         apruve.paymentRequest = pr;
+        apruve.shopperName = shopperName;
+        apruve.shopperEmail = shopperEmail;
         this._onLoad();
     },
 
@@ -20,7 +20,6 @@ ApruvePayment.prototype = {
             this._resetApruveRadio();
             this._prepareApruve();
             this._registerCallbacks();
-
         }
     },
 
@@ -42,7 +41,6 @@ ApruvePayment.prototype = {
         });
     },
 
-
     _resetApruveRadio: function () {
         if (!apruve.paymentRequestId) {
             document.getElementById("p_method_apruvepayment").checked = false;
@@ -57,32 +55,5 @@ ApruvePayment.prototype = {
                 document.getElementById("aprt").disabled = false;
             }
         }
-    },
-
-
-    _checkShipping: function (pr, updatedShippingUrl) {
-        if (apruve.paymentRequestId && !(apruve.paymentRequest.shipping_cents == pr.shipping_cents)) {
-            this._setShippingUpdated(updatedShippingUrl);
-        }
-    },
-
-    _setShippingUpdated: function (updatedShippingUrl) {
-        var self = this;
-        new Ajax.Request(
-            updatedShippingUrl,
-            {
-                method: 'post',
-                onSuccess: function(response) {
-                    if (!response.responseText) {
-                        apruve.paymentRequestId = '';
-                        self._resetApruveRadio();
-                        alert('Failed to update shipping cost. Please try to resubmit your order with apruve');
-                    }
-                },
-                onFailure: function() {
-                    self._resetApruveRadio();
-                }
-            }
-        )
     }
 };

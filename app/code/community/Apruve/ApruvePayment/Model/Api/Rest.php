@@ -1,4 +1,24 @@
 <?php
+
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Apache License, Version 2.0
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/Apache-2.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@apruve.com so we can send you a copy immediately.
+ *
+ * @category   Apruve
+ * @package    Apruve_Payment
+ * @copyright  Copyright (coffee) 2014 Apruve, Inc. (http://www.apruve.com).
+ * @license    http://opensource.org/licenses/Apache-2.0  Apache License, Version 2.0
+ */
+
 /**
  * Class Apruve_ApruvePayment_Model_Api_Rest
  *
@@ -22,14 +42,13 @@ class Apruve_ApruvePayment_Model_Api_Rest extends Apruve_ApruvePayment_Model_Api
         curl_setopt($c, CURLOPT_HTTPHEADER, $this->_getHeaders());
         curl_setopt($c, CURLOPT_POST, true);
         curl_setopt($c, CURLOPT_RETURNTRANSFER, true );
-        curl_setopt($c, CURLOPT_HEADER, true);
         curl_setopt($c, CURLOPT_POSTFIELDS, $data );
         $response = curl_exec($c);
         $http_status = curl_getinfo($c, CURLINFO_HTTP_CODE);
         curl_close($c);
 
         if($http_status == '201') {
-            return true;
+            return json_decode($response);
         } else {
             return false;
         }
@@ -58,7 +77,6 @@ class Apruve_ApruvePayment_Model_Api_Rest extends Apruve_ApruvePayment_Model_Api
         curl_setopt($c, CURLOPT_HTTPHEADER, $this->_getHeaders());
         curl_setopt($c, CURLOPT_CUSTOMREQUEST, "PUT");
         curl_setopt($c, CURLOPT_RETURNTRANSFER, true );
-        curl_setopt($c, CURLOPT_HEADER, true);
         curl_setopt($c, CURLOPT_POSTFIELDS, $data );
         $response = curl_exec($c);
         $http_status = curl_getinfo($c, CURLINFO_HTTP_CODE);
@@ -66,7 +84,7 @@ class Apruve_ApruvePayment_Model_Api_Rest extends Apruve_ApruvePayment_Model_Api
 
 
         if($http_status == '200') {
-            return true;
+            return json_decode($response);
         } else {
             return false;
         }

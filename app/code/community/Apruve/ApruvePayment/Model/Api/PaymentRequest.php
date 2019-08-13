@@ -1,4 +1,25 @@
 <?php
+
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Apache License, Version 2.0
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/Apache-2.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@apruve.com so we can send you a copy immediately.
+ *
+ * @category   Apruve
+ * @package    Apruve_Payment
+ * @copyright  Copyright (coffee) 2014 Apruve, Inc. (http://www.apruve.com).
+ * @license    http://opensource.org/licenses/Apache-2.0  Apache License, Version 2.0
+ */
+
+
 /**
  * Class Apruve_ApruvePayment_Model_Api_PaymentRequest
  * Provide methods to build paymentRequest
@@ -14,11 +35,11 @@ class Apruve_ApruvePayment_Model_Api_PaymentRequest extends Apruve_ApruvePayment
         //required
         'merchant_id',
         'amount_cents',
-        'line_items' => array(),
         //optional
+        'currency',
         'tax_cents',
         'shipping_cents',
-        'currency', // current only USD
+        'line_items' => array(),
     );
 
     /**
@@ -29,11 +50,11 @@ class Apruve_ApruvePayment_Model_Api_PaymentRequest extends Apruve_ApruvePayment
         //required
         'title',
         'amount_cents', // if qty -> should chanfe
+        'price_ea_cents',
         'description',
         'variant_info',
         'sku',
         'vendor',
-        'price_ea_cents',
         'view_product_url',
     );
 
@@ -89,17 +110,40 @@ class Apruve_ApruvePayment_Model_Api_PaymentRequest extends Apruve_ApruvePayment
      */
     protected function _setPaymentRequest()
     {
+        /** @var Mage_Sales_Model_Quote $quote */
         $quote = Mage::getSingleton('checkout/session')->getQuote();
+        $amounts = Mage::getSingleton('checkout/session')->getApruveAmounts();
+        if (!$amounts) {
+            $amounts = Mage::helper('apruvepayment')->getAmountsFromQuote($quote);
+            Mage::getSingleton('checkout/session')->setApruveAmounts($amounts);
+        }
+
         $paymentRequest = array(
             'merchant_id' => $this->_getMerchantKey(),
-            'amount_cents' => $this->_convertPrice($quote->getGrandTotal()),
+            'amount_cents' => $this->_convertPrice($amounts['amount_cents']),
             'currency' => 'USD',
-            'tax_cents' => $this->_convertPrice($quote->getShippingAddress()->getTaxAmount()),
-            'shipping_cents' => $this->_convertPrice($quote->getShippingAddress()->getShippingAmount()),
-            'line_items' => $this->_getLineItems($quote),
+            'tax_cents' => $this->_convertPrice($amounts['tax_cents']),
+            'shipping_cents' => $this->_convertPrice($amounts['shipping_cents']),
+            'line_items' => $this->_getLineItems($quote)
         );
 
         return $paymentRequest;
+    }
+
+
+
+    /**
+     * @param Mage_Sales_Model_Quote $quote
+     */
+    public function getShopperInfo($attrName)
+    {
+        $quote = Mage::getSingleton('checkout/session')->getQuote();
+        $method = 'get'.ucfirst($attrName);
+        if ($quote->getCustomerIsGuest()) {
+            return $quote->getBillingAddress()->$method();
+        }
+
+        return $quote->getCustomer()->$method();
     }
 
     /**
@@ -115,23 +159,19 @@ class Apruve_ApruvePayment_Model_Api_PaymentRequest extends Apruve_ApruvePayment
             $title = $item->getName();
             $amount_cents = $this->_convertPrice($item->getPrice()) * $qty;
             $shortDescription = $item->getShortDescription();
+            $variantInfo = $this->_getVariantInfo($item);
             $viewUrl = $item->getProduct()->getProductUrl(false);
             $priceEaCents = $this->_convertPrice($item->getPrice());
 
             $line_item = array(
                 'title' => $title,
                 'amount_cents' => $amount_cents,
-                'description' => $shortDescription,
-                'view_product_url' => $viewUrl,
                 'price_ea_cents' => $priceEaCents,
                 'quantity' => $qty,
-
+                'description' => isset($shortDescription) ? $shortDescription : '',
+                'variant_info' => $variantInfo ? $variantInfo : '',
+                'view_product_url' => $viewUrl,
             );
-
-            $variantInfo = $this->_getVariantInfo($item);
-            if($variantInfo) {
-                $line_item['variant_info'] = $variantInfo;
-            }
 
             $line_items[] = $line_item;
         }

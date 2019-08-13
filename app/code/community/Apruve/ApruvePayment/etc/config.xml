@@ -2,7 +2,7 @@
 <config>
     <modules>
        <Apruve_ApruvePayment>
-          <version>1.0.0</version>
+          <version>1.0.10</version>
        </Apruve_ApruvePayment>
     </modules>
     <frontend>
@@ -22,7 +22,7 @@
                 </apruvepayment>
             </updates>
         </layout>
-    </frontend>   
+    </frontend>
     <global>
         <blocks>
             <apruvepayment>
@@ -64,10 +64,12 @@
     <default>
         <payment>
             <apruvepayment>
+                <mode>1</mode>
                 <active>1</active>
                 <model>apruvepayment/paymentMethod</model>
                 <order_status>pending_payment</order_status>
-                <title>Apruve</title>
+                <title>Pay with Apruve</title>
+                <payment_action>authorize</payment_action>
             </apruvepayment>
          </payment>
     </default>
