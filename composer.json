@@ -1,5 +1,5 @@
 {
-    "name": "OpenMageModuleFostering\/Apruve_B2B_Payment_Gateway",
+    "name": "openmage-module-fostering\/apruve_b2b_payment_gateway",
     "type": "magento-module",
     "license": "Apache-License,-2.0",
     "homepage": "",
