@@ -1,16 +1,19 @@
 {
-    "name": "OpenMageModuleFostering/Apruve_B2B_Payment_Gateway",
+    "name": "OpenMageModuleFostering\/Apruve_B2B_Payment_Gateway",
     "type": "magento-module",
     "license": "Apache-License,-2.0",
     "homepage": "",
-    "description": "Payments designed for business spending. Increase sales and reduce cart abandonment by allowing your shoppers to send purchases directly to their company or client for payment, simply by using an email address instead of a credit card. Learn more and sign up for a free merchant account at http://www.apruve.com.",
+    "description": "Payments designed for business spending. Increase sales and reduce cart abandonment by allowing your shoppers to send purchases directly to their company or client for payment, simply by using an email address instead of a credit card. Learn more and sign up for a free merchant account at http:\/\/www.apruve.com.",
     "authors": [
-    {
-        "name": "Apruve",
-        "email": "magento@apruve.com"
-    }
-],
+        {
+            "name": "Apruve",
+            "email": "magento@apruve.com"
+        }
+    ],
     "suggest": {
-        "magento-hackathon/magento-composer-installer": "*"
-    }
+        "magento-hackathon\/magento-composer-installer": "*"
+    },
+    "keywords": [
+        "openmage-module"
+    ]
 }
